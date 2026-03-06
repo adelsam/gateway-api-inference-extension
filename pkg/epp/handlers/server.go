@@ -291,6 +291,7 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 				reqCtx.respBodyResp = generateResponseBodyResponses(v.ResponseBody.Body, v.ResponseBody.EndOfStream)
 				if v.ResponseBody.EndOfStream && len(reqCtx.respBodyResp) > 0 && reqCtx.Response.DynamicMetadata != nil {
 					reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata = reqCtx.Response.DynamicMetadata
+					logger.V(1).Info("Attached DynamicMetadata from plugins to Envoy streaming response", "metadata", reqCtx.Response.DynamicMetadata)
 				}
 			} else {
 				body = append(body, v.ResponseBody.Body...)
@@ -314,6 +315,7 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 					}
 					if len(reqCtx.respBodyResp) > 0 && reqCtx.Response.DynamicMetadata != nil {
 						reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata = reqCtx.Response.DynamicMetadata
+						logger.V(1).Info("Attached DynamicMetadata from plugins to Envoy buffered response", "metadata", reqCtx.Response.DynamicMetadata)
 					}
 				}
 			}

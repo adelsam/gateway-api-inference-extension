@@ -195,7 +195,7 @@ func (c *Plugin) ResponseComplete(ctx context.Context, request *scheduling.LLMRe
 
 	namespaceMap.GetStructValue().Fields[attributeKey.Name] = attributeValue
 
-	log.FromContext(ctx).V(logutil.VERBOSE).Info("Wrote dynamic metadata value to dynamic metadata", "value", intVal)
+	log.FromContext(ctx).V(1).Info("Calculated request attribute value and stored in dynamic metadata", "namespace", attributeKey.Namespace, "name", attributeKey.Name, "value", intVal)
 }
 
 func (c *Plugin) getCelData(response *requestcontrol.Response) (any, error) {
