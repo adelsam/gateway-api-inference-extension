@@ -59,3 +59,4 @@ substitutions:
   _PULL_BASE_SHA: 'abcdef'
 options:
   substitution_option: ALLOW_LOOSE
+  logging: NONE

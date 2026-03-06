@@ -289,6 +289,9 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 					metrics.RecordNormalizedTimePerOutputToken(ctx, reqCtx.IncomingModelName, reqCtx.TargetModelName, reqCtx.RequestReceivedTimestamp, reqCtx.ResponseCompleteTimestamp, reqCtx.Usage.CompletionTokens)
 				}
 				reqCtx.respBodyResp = generateResponseBodyResponses(v.ResponseBody.Body, v.ResponseBody.EndOfStream)
+				if v.ResponseBody.EndOfStream && len(reqCtx.respBodyResp) > 0 && reqCtx.Response.DynamicMetadata != nil {
+					reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata = reqCtx.Response.DynamicMetadata
+				}
 			} else {
 				body = append(body, v.ResponseBody.Body...)
 
@@ -308,6 +311,9 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 					metrics.RecordOutputTokens(reqCtx.IncomingModelName, reqCtx.TargetModelName, reqCtx.Usage.CompletionTokens)
 					if reqCtx.Usage.PromptTokenDetails != nil {
 						metrics.RecordPromptCachedTokens(reqCtx.IncomingModelName, reqCtx.TargetModelName, reqCtx.Usage.PromptTokenDetails.CachedTokens)
+					}
+					if len(reqCtx.respBodyResp) > 0 && reqCtx.Response.DynamicMetadata != nil {
+						reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata = reqCtx.Response.DynamicMetadata
 					}
 				}
 			}
