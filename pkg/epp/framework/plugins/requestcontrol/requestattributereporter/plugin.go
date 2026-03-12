@@ -186,16 +186,24 @@ func (c *Plugin) ResponseComplete(
 	if response.DynamicMetadata == nil {
 		response.DynamicMetadata = &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	}
-	if response.DynamicMetadata.Fields == nil {
-		response.DynamicMetadata.Fields = make(map[string]*structpb.Value)
-	}
 
 	attributeKey := c.config.Attributes[0].Key
-	attributeValue := float64(intVal)
+	namespace := attributeKey.Namespace
+	field := attributeKey.Name
 
-	response.DynamicMetadata.Fields[attributeKey.Namespace] = structpb.NewNumberValue(attributeValue)
+	// 1. Get or create the StructValue for the "envoy.lb" namespace
+	nsValue, ok := response.DynamicMetadata.Fields[namespace]
+	if !ok || nsValue.GetStructValue() == nil {
+		nsValue = structpb.NewStructValue(&structpb.Struct{
+			Fields: make(map[string]*structpb.Value),
+		})
+		response.DynamicMetadata.Fields[namespace] = nsValue
+	}
 
-	logger.V(1).Info("Wrote dynamic metadata value to dynamic metadata", "value", intVal)
+	// 2. Set the metric field inside the namespace's struct directly to a number
+	nsValue.GetStructValue().Fields[field] = structpb.NewNumberValue(float64(intVal))
+
+	logger.V(1).Info("Wrote dynamic metadata value to dynamic metadata", "namespace", namespace, "field", field, "value", intVal)
 }
 
 func (c *Plugin) getCelData(response *requestcontrol.Response) (any, error) {

@@ -211,7 +211,11 @@ func TestValueReporting(t *testing.T) {
 			},
 			wantResult: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					DefaultNamespace: {Kind: &structpb.Value_NumberValue{NumberValue: 15}},
+					DefaultNamespace: structpb.NewStructValue(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"prompt_tokens": structpb.NewNumberValue(15),
+						},
+					}),
 				},
 			},
 		},
@@ -235,7 +239,11 @@ func TestValueReporting(t *testing.T) {
 			},
 			wantResult: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					DefaultNamespace: {Kind: &structpb.Value_NumberValue{NumberValue: 0}},
+					DefaultNamespace: structpb.NewStructValue(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"prompt_tokens": structpb.NewNumberValue(0),
+						},
+					}),
 				},
 			},
 		},
@@ -343,7 +351,11 @@ func TestValueReporting(t *testing.T) {
 			},
 			wantResult: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					DefaultNamespace: {Kind: &structpb.Value_NumberValue{NumberValue: 0}},
+					DefaultNamespace: structpb.NewStructValue(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"total_tokens": structpb.NewNumberValue(0),
+						},
+					}),
 				},
 			},
 		},
@@ -366,7 +378,11 @@ func TestValueReporting(t *testing.T) {
 			},
 			wantResult: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					DefaultNamespace: {Kind: &structpb.Value_NumberValue{NumberValue: 25}},
+					DefaultNamespace: structpb.NewStructValue(&structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"total_tokens": structpb.NewNumberValue(25),
+						},
+					}),
 				},
 			},
 		},
