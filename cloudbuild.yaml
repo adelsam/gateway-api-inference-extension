@@ -13,6 +13,7 @@ steps:
     - EXTRA_TAG=$_PULL_BASE_REF
     - DOCKER_BUILDX_CMD=/buildx-entrypoint
     - GIT_COMMIT_SHA=$_PULL_BASE_SHA
+    - STAGING_IMAGE_REGISTRY=$_STAGING_IMAGE_REGISTRY
   - name: gcr.io/k8s-staging-test-infra/gcb-docker-gcloud:v20240718-5ef92b5c36
     entrypoint: make
     args:
@@ -21,6 +22,7 @@ steps:
     - GIT_TAG=$_GIT_TAG
     - EXTRA_TAG=$_PULL_BASE_REF
     - DOCKER_BUILDX_CMD=/buildx-entrypoint
+    - STAGING_IMAGE_REGISTRY=$_STAGING_IMAGE_REGISTRY
   - name: gcr.io/k8s-staging-test-infra/gcb-docker-gcloud:v20240718-5ef92b5c36
     entrypoint: make
     args:
@@ -30,6 +32,7 @@ steps:
     env:
     - EXTRA_TAG=$_PULL_BASE_REF
     - GOTOOLCHAIN=auto
+    - IMAGE_REGISTRY=$_STAGING_IMAGE_REGISTRY/gateway-api-inference-extension
   - name: gcr.io/k8s-staging-test-infra/gcb-docker-gcloud:v20240718-5ef92b5c36
     entrypoint: make
     args:
@@ -38,6 +41,7 @@ steps:
     - GIT_TAG=$_GIT_TAG
     - EXTRA_TAG=$_PULL_BASE_REF
     - DOCKER_BUILDX_CMD=/buildx-entrypoint
+    - STAGING_IMAGE_REGISTRY=$_STAGING_IMAGE_REGISTRY
 substitutions:
   # _GIT_TAG will be filled with a git-based tag for the image, of the form vYYYYMMDD-hash, and
   # can be used as a substitution
@@ -47,5 +51,7 @@ substitutions:
   _PULL_BASE_REF: 'main'
   # _PULL_BASE_SHA will contain the Git SHA of the commit that was pushed to trigger this build.
   _PULL_BASE_SHA: 'abcdef'
+  # _STAGING_IMAGE_REGISTRY will override the default k8s staging registry during Make steps
+  _STAGING_IMAGE_REGISTRY: 'us-central1-docker.pkg.dev/sadelman-staging/sadelman-gce-staging-dev'
 options:
   substitution_option: ALLOW_LOOSE

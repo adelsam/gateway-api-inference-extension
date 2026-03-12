@@ -191,15 +191,9 @@ func (c *Plugin) ResponseComplete(
 	}
 
 	attributeKey := c.config.Attributes[0].Key
-	attributeValue := &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: float64(intVal)}}
+	attributeValue := float64(intVal)
 
-	namespaceMap, ok := response.DynamicMetadata.Fields[attributeKey.Namespace]
-	if !ok {
-		namespaceMap = &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{Fields: make(map[string]*structpb.Value)}}}
-		response.DynamicMetadata.Fields[attributeKey.Namespace] = namespaceMap
-	}
-
-	namespaceMap.GetStructValue().Fields[attributeKey.Name] = attributeValue
+	response.DynamicMetadata.Fields[attributeKey.Namespace] = structpb.NewNumberValue(attributeValue)
 
 	logger.V(1).Info("Wrote dynamic metadata value to dynamic metadata", "value", intVal)
 }
