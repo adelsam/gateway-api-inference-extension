@@ -321,6 +321,8 @@ func (d *Director) HandleResponseBodyComplete(ctx context.Context, reqCtx *handl
 
 	d.runResponseCompletePlugins(ctx, reqCtx.SchedulingRequest, response, reqCtx.TargetPod)
 
+	reqCtx.Response.DynamicMetadata = response.DynamicMetadata
+
 	logger.V(logutil.DEBUG).Info("Exiting HandleResponseBodyComplete")
 	return reqCtx, nil
 }
