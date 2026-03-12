@@ -31,6 +31,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 	fwkdl "sigs.k8s.io/gateway-api-inference-extension/pkg/epp/framework/interface/datalayer"
 
@@ -308,6 +309,16 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 				}
 
 				reqCtx.respBodyResp = generateResponseBodyResponses(v.ResponseBody.Body, v.ResponseBody.EndOfStream)
+				
+				if v.ResponseBody.EndOfStream && len(reqCtx.respBodyResp) > 0 && reqCtx.Response.DynamicMetadata != nil {
+					reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata = reqCtx.Response.DynamicMetadata
+					
+					if mdBytes, err := protojson.Marshal(reqCtx.Response.DynamicMetadata); err == nil {
+						logger.V(1).Info("Attached DynamicMetadata from plugins to Envoy streaming response", "metadata_json", string(mdBytes))
+					} else {
+						logger.V(1).Info("Attached DynamicMetadata from plugins to Envoy streaming response (failed to marshal)", "metadata", reqCtx.Response.DynamicMetadata)
+					}
+				}
 			} else {
 				body = append(body, v.ResponseBody.Body...)
 
@@ -347,6 +358,16 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 							cachedToken = reqCtx.Usage.PromptTokenDetails.CachedTokens
 						}
 						metrics.RecordPromptCachedTokens(reqCtx.IncomingModelName, reqCtx.TargetModelName, cachedToken)
+					}
+				}
+				
+				if len(reqCtx.respBodyResp) > 0 && reqCtx.Response.DynamicMetadata != nil {
+					reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata = reqCtx.Response.DynamicMetadata
+					
+					if mdBytes, err := protojson.Marshal(reqCtx.Response.DynamicMetadata); err == nil {
+						logger.V(1).Info("Attached DynamicMetadata from plugins to Envoy buffered response", "metadata_json", string(mdBytes))
+					} else {
+						logger.V(1).Info("Attached DynamicMetadata from plugins to Envoy buffered response (failed to marshal)", "metadata", reqCtx.Response.DynamicMetadata)
 					}
 				}
 			}
