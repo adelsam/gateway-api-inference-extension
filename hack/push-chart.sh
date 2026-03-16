@@ -25,7 +25,7 @@ CHART_VERSION=${CHART_VERSION:-"v0"}
 
 STAGING_IMAGE_REGISTRY=${STAGING_IMAGE_REGISTRY:-us-central1-docker.pkg.dev/k8s-staging-images}
 IMAGE_REGISTRY=${IMAGE_REGISTRY:-${STAGING_IMAGE_REGISTRY}/gateway-api-inference-extension}
-HELM_CHART_REPO=${HELM_CHART_REPO:-${STAGING_IMAGE_REGISTRY}/gateway-api-inference-extension/charts}
+HELM_CHART_REPO=${HELM_CHART_REPO:-${IMAGE_REGISTRY}/charts}
 CHART=${CHART:-inferencepool}
 
 HELM=${HELM:-./bin/helm}
