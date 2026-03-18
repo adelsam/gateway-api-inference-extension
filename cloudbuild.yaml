@@ -62,7 +62,7 @@ substitutions:
   _PULL_BASE_REF: 'main'
   # _PULL_BASE_SHA will contain the Git SHA of the commit that was pushed to trigger this build.
   _PULL_BASE_SHA: 'abcdef'
-  _IMAGE_REGISTRY: 'us-central1-docker.pkg.dev/sadelman-staging/sadelman-gce-staging-dev/gateway-api-inference-extension/'
+  _IMAGE_REGISTRY: 'us-central1-docker.pkg.dev/sadelman-staging/sadelman-gce-staging-dev/gateway-api-inference-extension'
 options:
   substitution_option: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
