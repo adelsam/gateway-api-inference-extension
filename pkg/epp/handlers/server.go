@@ -382,6 +382,7 @@ func (r *RequestContext) updateStateAndSendIfNeeded(srv extProcPb.ExternalProces
 	if r.RequestState == HeaderResponseResponseComplete {
 		loggerTrace.Info("Sending response body response(s)")
 		for _, response := range r.respBodyResp {
+			loggerTrace.Info("Sending response body chunk to Envoy", "dynamicMetadata", response.DynamicMetadata)
 			if err := srv.Send(response); err != nil {
 				return status.Errorf(codes.Unknown, "failed to send response back to Envoy: %v", err)
 			}

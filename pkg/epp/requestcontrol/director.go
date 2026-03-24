@@ -351,7 +351,9 @@ func (d *Director) HandleResponseBody(ctx context.Context, reqCtx *handlers.Requ
 		Usage:       reqCtx.Usage,
 	}
 	d.runResponseBodyPlugins(ctx, reqCtx.SchedulingRequest, response, reqCtx.TargetPod)
-	reqCtx.Response.DynamicMetadata = response.DynamicMetadata
+	if response.DynamicMetadata != nil {
+		reqCtx.Response.DynamicMetadata = response.DynamicMetadata
+	}
 	logger.V(logutil.TRACE).Info("Exiting HandleResponseBodyChunk")
 	return reqCtx
 }
