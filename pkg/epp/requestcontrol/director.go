@@ -352,9 +352,13 @@ func (d *Director) HandleResponseBody(ctx context.Context, reqCtx *handlers.Requ
 	}
 	d.runResponseBodyPlugins(ctx, reqCtx.SchedulingRequest, response, reqCtx.TargetPod)
 	if response.DynamicMetadata != nil {
+		logger.V(logutil.TRACE).Info("Before DynamicMetadata assignment", "reqCtx.Response.DynamicMetadata (old)", reqCtx.Response.DynamicMetadata, "response.DynamicMetadata (new)", response.DynamicMetadata)
 		reqCtx.Response.DynamicMetadata = response.DynamicMetadata
+		logger.V(logutil.TRACE).Info("After DynamicMetadata assignment", "reqCtx.Response.DynamicMetadata", reqCtx.Response.DynamicMetadata)
+	} else {
+		logger.V(logutil.TRACE).Info("Plugin returned nil DynamicMetadata, keeping existing", "current", reqCtx.Response.DynamicMetadata)
 	}
-	logger.V(logutil.TRACE).Info("Exiting HandleResponseBodyChunk")
+	logger.V(logutil.TRACE).Info("Exiting HandleResponseBodyChunk", "reqCtx.Response.DynamicMetadata", reqCtx.Response.DynamicMetadata)
 	return reqCtx
 }
 

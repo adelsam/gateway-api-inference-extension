@@ -273,8 +273,12 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 
 			if reqCtx.modelServerStreaming {
 				s.HandleResponseBody(ctx, reqCtx, chunk, endOfStream)
+				loggerTrace.Info("After HandleResponseBody in Streaming path", "DynamicMetadata", reqCtx.Response.DynamicMetadata)
 				// For streaming response, we send response chunk back to envoy every time we received it.
 				reqCtx.respBodyResp = generateResponseBodyResponses(chunk, endOfStream, reqCtx.Response.DynamicMetadata)
+				if len(reqCtx.respBodyResp) > 0 {
+					loggerTrace.Info("Generated response body responses", "numResponses", len(reqCtx.respBodyResp), "lastChunkDynamicMetadata", reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata)
+				}
 			} else {
 				body = append(body, chunk...)
 			}
@@ -382,7 +386,6 @@ func (r *RequestContext) updateStateAndSendIfNeeded(srv extProcPb.ExternalProces
 	if r.RequestState == HeaderResponseResponseComplete {
 		loggerTrace.Info("Sending response body response(s)")
 		for _, response := range r.respBodyResp {
-			loggerTrace.Info("Sending response body chunk to Envoy", "dynamicMetadata", response.DynamicMetadata)
 			if err := srv.Send(response); err != nil {
 				return status.Errorf(codes.Unknown, "failed to send response back to Envoy: %v", err)
 			}
