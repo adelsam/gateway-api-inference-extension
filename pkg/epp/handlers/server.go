@@ -273,11 +273,11 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 
 			if reqCtx.modelServerStreaming {
 				s.HandleResponseBody(ctx, reqCtx, chunk, endOfStream)
-				loggerTrace.Info("After HandleResponseBody in Streaming path", "DynamicMetadata", reqCtx.Response.DynamicMetadata)
+				logger.V(logutil.VERBOSE).Info("After HandleResponseBody in Streaming path", "DynamicMetadata", reqCtx.Response.DynamicMetadata)
 				// For streaming response, we send response chunk back to envoy every time we received it.
 				reqCtx.respBodyResp = generateResponseBodyResponses(chunk, endOfStream, reqCtx.Response.DynamicMetadata)
 				if len(reqCtx.respBodyResp) > 0 {
-					loggerTrace.Info("Generated response body responses", "numResponses", len(reqCtx.respBodyResp), "lastChunkDynamicMetadata", reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata)
+					logger.V(logutil.VERBOSE).Info("Generated response body responses", "numResponses", len(reqCtx.respBodyResp), "lastChunkDynamicMetadata", reqCtx.respBodyResp[len(reqCtx.respBodyResp)-1].DynamicMetadata)
 				}
 			} else {
 				body = append(body, chunk...)
