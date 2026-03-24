@@ -96,8 +96,17 @@ func generateResponseBodyResponses(responseBodyBytes []byte, setEoS bool, dynami
 		responses = append(responses, resp)
 	}
 
-	// Attach dynamic metadata to the last response if available.
-	if len(responses) > 0 && dynamicMetadata != nil && setEoS {
+	if len(responses) == 0 && dynamicMetadata != nil && setEoS {
+		resp := &extProcPb.ProcessingResponse{
+			Response: &extProcPb.ProcessingResponse_ResponseBody{
+				ResponseBody: &extProcPb.BodyResponse{
+					Response: &extProcPb.CommonResponse{},
+				},
+			},
+			DynamicMetadata: dynamicMetadata,
+		}
+		responses = []*extProcPb.ProcessingResponse{resp}
+	} else if len(responses) > 0 && dynamicMetadata != nil && setEoS {
 		responses[len(responses)-1].DynamicMetadata = dynamicMetadata
 	}
 	return responses

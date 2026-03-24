@@ -272,6 +272,9 @@ func (s *StreamingServer) Process(srv extProcPb.ExternalProcessor_ProcessServer)
 			chunk := v.ResponseBody.Body
 
 			if reqCtx.modelServerStreaming {
+				if endOfStream {
+					reqCtx.ResponseCompleteTimestamp = time.Now()
+				}
 				s.HandleResponseBody(ctx, reqCtx, chunk, endOfStream)
 				logger.V(logutil.VERBOSE).Info("After HandleResponseBody in Streaming path", "DynamicMetadata", reqCtx.Response.DynamicMetadata)
 				// For streaming response, we send response chunk back to envoy every time we received it.
@@ -335,11 +338,10 @@ func (s *StreamingServer) finishResponse(ctx context.Context, reqCtx *RequestCon
 	reqCtx.ResponseComplete = true
 	reqCtx.ResponseCompleteTimestamp = time.Now()
 	reqCtx.ResponseSize = len(body)
-	reqCtx = s.HandleResponseBody(ctx, reqCtx, body, true)
 	if !modelStreaming {
-		// For non-streaming response, we send response back to envoy after receiving all the response body.
-		reqCtx.respBodyResp = generateResponseBodyResponses(body, true, reqCtx.Response.DynamicMetadata)
+		reqCtx = s.HandleResponseBody(ctx, reqCtx, body, true)
 	}
+	reqCtx.respBodyResp = generateResponseBodyResponses(body, true, reqCtx.Response.DynamicMetadata)
 }
 
 // updateStateAndSendIfNeeded checks state and can send mutiple responses in a single pass, but only if ordered properly.
