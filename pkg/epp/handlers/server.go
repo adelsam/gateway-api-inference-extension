@@ -341,7 +341,8 @@ func (s *StreamingServer) finishResponse(ctx context.Context, reqCtx *RequestCon
 	if !modelStreaming {
 		reqCtx = s.HandleResponseBody(ctx, reqCtx, body, true)
 	}
-	reqCtx.respBodyResp = generateResponseBodyResponses(body, true, reqCtx.Response.DynamicMetadata)
+	responses := generateResponseBodyResponses(body, true, reqCtx.Response.DynamicMetadata)
+	reqCtx.respBodyResp = append(reqCtx.respBodyResp, responses...)
 }
 
 // updateStateAndSendIfNeeded checks state and can send mutiple responses in a single pass, but only if ordered properly.
